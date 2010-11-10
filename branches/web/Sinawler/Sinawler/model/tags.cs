@@ -1,0 +1,103 @@
+using System;
+using System.Data;
+using System.Text;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Sinawler.Model
+{
+	/// <summary>
+	/// 类tags。
+	/// </summary>
+    public class Tag
+	{
+        public Tag()
+        { }
+
+		#region Model
+		private long _tag_id;
+		private string _tag;
+        private int _iteration;
+        private string _update_time;
+		/// <summary>
+		/// 
+		/// </summary>
+		public long tag_id
+		{
+			set{ _tag_id=value;}
+			get{return _tag_id;}
+		}
+		/// <summary>
+		/// 标签
+		/// </summary>
+		public string tag
+		{
+			set{ _tag=value;}
+			get{return _tag;}
+		}
+        /// <summary>
+        /// 迭代次数。默认为0，每迭代一次，就加1，则为0的为最近的数据
+        /// </summary>
+        public int iteration
+        {
+            set { _iteration = value; }
+            get { return _iteration; }
+        }
+        /// <summary>
+        /// 记录更新时间
+        /// </summary>
+        public string update_time
+        {
+            set { _update_time = value; }
+            get { return _update_time; }
+        }
+		#endregion Model
+
+		#region  成员方法
+
+		/// <summary>
+		/// 是否存在该记录
+		/// </summary>
+        static public bool Exists ( long lTagID )
+        {
+            Database db = DatabaseFactory.CreateDatabase();
+            db = DatabaseFactory.CreateDatabase();
+            int count = db.CountByExecuteSQLSelect( "select count(tag_id) from tags where tag_id=" + lTagID.ToString() );
+            return count > 0;
+        }
+
+        /// <summary>
+        /// 更新数据库中已有数据的迭代次数
+        /// </summary>
+        static public void NewIterate ()
+        {
+            Database db = DatabaseFactory.CreateDatabase();
+            db = DatabaseFactory.CreateDatabase();
+            db.CountByExecuteSQL( "update tags set iteration=iteration+1" );
+        }
+
+		/// <summary>
+		/// 增加一条数据
+		/// </summary>
+		public void Add()
+		{
+            try
+            {
+                Database db = DatabaseFactory.CreateDatabase();
+                Hashtable htValues = new Hashtable();
+                _update_time = "'" + DateTime.Now.ToString( "u" ).Replace( "Z", "" ) + "'";
+                htValues.Add( "tag_id", _tag_id );
+                htValues.Add( "tag", "'"+_tag+"'" );
+                htValues.Add( "iteration", iteration );
+                htValues.Add( "update_time", _update_time );
+
+                db.Insert( "tags", htValues );
+            }
+            catch
+            { return; }
+		}
+
+		#endregion  成员方法
+	}
+}
+
